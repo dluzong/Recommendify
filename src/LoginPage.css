@@ -1,0 +1,121 @@
+.login-body {
+    margin: 0; 
+    height: 100vh; 
+    background: url('/public/assets/background.png') no-repeat center center fixed; 
+    background-size: cover; 
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .login-container {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    height: 500px;
+    width: 380px;
+    background-color: rgba(27, 26, 85, 0.8);
+    border-radius: 15px;
+  }
+  
+  .login-container h1 {
+    font-size: 36px;
+    color: #9290C3;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    margin-top: 120px;
+  }
+  
+  .login-container p {
+    display: flex;
+    color: white;
+    flex-direction: row;
+    font-size: 18px;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+  }
+  
+  .spotify-icon {
+    width: 18px;
+    margin-left: 5px;
+    display: flex;
+  }
+  
+  .login-container input {
+    width: 75%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: none;
+  }
+  
+  .sign-in {
+    width: 80%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: none;
+    background-color: #535C91;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    opacity: 100%;
+  }
+  
+  .sign-in:hover {
+    background-color: #424870;
+  }
+  
+  .separator {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 20px 0;
+    width: 80%;
+  }
+  
+  .separator::before,
+  .separator::after {
+    content: "";
+    flex: 1;
+    border-top: 1px solid #9290C3;
+    margin: 0 10px;
+  }
+  
+  .separator span {
+    color: #9290C3;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  
+  .google-login {
+    width: 80%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: none;
+    background-color: white;
+    color: black;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    margin-bottom: 120px;
+  }
+  
+  .google-login:hover {
+    background-color: #CCCBCB;
+  }
+  
+  .google-icon {
+    width: 16px;
+  }
+  
+  .google-text {
+    flex-grow: 1;
+    text-align: center;
+    font-size: 16px;
+    color: black;
+  }
+  
