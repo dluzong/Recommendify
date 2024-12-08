@@ -1,0 +1,26 @@
+{
+    "short_name": "React App",
+    "name": "React Application",
+    "icons": [
+      {
+        "src": "favicon.ico",
+        "sizes": "16x16 32x32 48x48",
+        "type": "image/x-icon"
+      },
+      {
+        "src": "logo192.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
+      {
+        "src": "logo512.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      }
+    ],
+    "start_url": ".",
+    "background_color": "#ffffff",
+    "display": "standalone",
+    "theme_color": "#000000"
+  }
+  
