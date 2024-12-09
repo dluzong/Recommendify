@@ -75,3 +75,115 @@ body {
     object-fit: cover;
     cursor: pointer;
 }
+
+.recommended-section {
+    text-align: center;
+    color: #9290C3;
+    margin: 20px;
+    padding: 0 20px;
+}
+
+.recommended-section h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.recommended-section .line {
+    width: 50%;
+    height: 2px;
+    background-color: #727DBE;
+    margin: 0 auto 20px;
+}
+
+.carousel-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.carousel {
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    width: 60%;
+    overflow: hidden;
+    position: relative;
+}
+
+.carousel-item {
+    flex: 0 0 100%; 
+    max-width: 100%;
+    opacity: 0; 
+    transform: scale(0.8);
+    transition: transform 0.5s ease, opacity 0.5s ease;
+    margin: 0; 
+    position: absolute;
+}
+
+.carousel-item img {
+    border-radius: 8px;
+    object-fit: cover; 
+}
+
+@media (max-width: 768px) {
+    .carousel-item img {
+        height: 200px; 
+    }
+}
+
+.carousel-item.active {
+    opacity: 1;
+    transform: scale(1); 
+    position: relative; 
+    z-index: 1;
+}
+
+.carousel-item.prev,
+.carousel-item.next {
+    opacity: 0.5;
+    transform: scale(0.9);
+    z-index: 0;
+}
+
+.carousel-item.hidden {
+    display: none; 
+}
+
+.carousel-button {
+    position: absolute;
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    color: #9290C3;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.carousel-button.left {
+    left: 10%;
+}
+
+.carousel-button.right {
+    right: 10%;
+}
+
+.carousel-dots {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+    gap: 8px;
+}
+
+.carousel-dots .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #727DBE;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.carousel-dots .dot.active {
+    background: #9290C3;
+}
