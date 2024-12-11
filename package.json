@@ -1,17 +1,23 @@
 {
   "name": "recommendify",
   "version": "0.1.0",
-  "proxy": "http://localhost:5001",
+  "proxy": "http://localhost:5001/",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "axios": "^1.7.2",
+    "cookie-parser": "1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
     "express": "^4.21.1",
+    "querystring": "^0.2.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.28.0",
     "react-scripts": "^5.0.1",
+    "request": "2.88.2",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -19,7 +25,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "dev": "nodemon server/server.js"
+    "dev": "nodemon server/server.js",
+    "both": "concurrently \"npm run start\" \"npm run dev\""
   },
   "eslintConfig": {
     "extends": [
@@ -41,6 +48,7 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "concurrently": "^9.1.0",
     "nodemon": "^3.1.7"
   },
   "description": "",
