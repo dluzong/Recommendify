@@ -1,6 +1,7 @@
 var express = require('express');
 var cors = require('cors');
 var querystring = require('querystring');
+ 
 
 require("dotenv").config();
 
@@ -9,6 +10,7 @@ app.use(express.static(__dirname + '/public'))
    .use(cors());
 
 const PORT = 5001;
+const fetch = require('node-fetch'); 
 
 // Spotify API credentials
 const CLIENT_ID = process.env.CLIENT_ID;
@@ -138,6 +140,37 @@ app.post("/logout", (req, res) => {
     } catch (error) {
         console.error("Error during logout:", error.message);
         res.status(500).json({ error: "Logout failed" });
+    }
+});
+
+app.get("/api/search", async (req, res) => {
+    const { query } = req.query;  // query can be a genre or a year
+    if (!query) {
+        return res.status(400).json({ error: "Query parameter is required" });
+    }
+
+    const token = req.headers["authorization"];
+    if (!token) {
+        return res.status(401).json({ error: "Access Token Missing" });
+    }
+
+    try {
+        // Fetch access token (ensure it’s valid)
+        const searchUrl = `https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=10`;
+        const response = await fetch(searchUrl, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            }
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+            res.json(data.tracks.items);  // Send back the list of tracks
+        } else {
+            res.status(response.status).json({ error: "Error fetching search results from Spotify" });
+        }
+    } catch (error) {
+        res.status(500).json({ error: "Failed to fetch search results" });
     }
 });
 

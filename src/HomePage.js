@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Importing useNavigate from react-router-dom
 import './HomePage.css';
 
 function HomePage() {
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [searchQuery, setSearchQuery] = useState('');
+    const navigate = useNavigate(); // Initialize the navigation hook
 
     const images = [
         { src: "https://www.billboard.com/wp-content/uploads/media/02-the-weeknd-press-2019-cr-Nabil-Elderkin-billboard-1548.jpg?w=1024", title: "The Weeknd - Blinding Lights" },
@@ -31,7 +34,25 @@ function HomePage() {
         { name: "Daft Punk", genre: "Electronic", image: "https://imgproxy.ra.co/_/quality:66/aHR0cHM6Ly9zdGF0aWMucmEuY28vaW1hZ2VzL3Byb2ZpbGVzL2xnL2RhZnRwdW5rLmpwZz9kYXRlVXBkYXRlZD0xNTk4MzkxMzc5MDAw" },
         { name: "Beyoncé", genre: "R&B", image: "https://metro.co.uk/wp-content/uploads/2023/03/SEI_148621909-b014.jpg?quality=90&strip=all&w=646" },
         { name: "The Rolling Stones", genre: "Rock", image: "https://cdn.britannica.com/41/197341-050-4859B808/The-Rolling-Stones-Bill-Wyman-Keith-Richards-1964.jpg" }
-      ];
+    ];
+
+    // Handle search query input change
+    const handleSearchChange = (event) => {
+        setSearchQuery(event.target.value);
+    };
+
+    // Redirect to search results page
+    const handleSearchSubmit = (event) => {
+        // Add logging to check if the function is being triggered on click
+        console.log('Search submitted:', searchQuery);
+
+        // Check if searchQuery is not empty before navigating
+        if (searchQuery.trim() !== '') {
+            navigate(`/search?query=${searchQuery}`); // Redirect to the search page with query param
+        } else {
+            alert('Please enter a search term');
+        }
+    };
 
     return (
         <div className="home-page">
@@ -42,8 +63,11 @@ function HomePage() {
                         type="text"
                         className="search-bar"
                         placeholder="Search..."
+                        value={searchQuery}
+                        onChange={handleSearchChange}
+                        onKeyDown={(e) => e.key === 'Enter' && handleSearchSubmit(e)}  // Listen for Enter key
                     />
-                    <span className="magnifying-glass">🔍</span>
+                    <span className="magnifying-glass" onClick={handleSearchSubmit}>🔍</span> {/* Click to trigger search */}
                 </div>
                 <button className="logout-button">Logout</button>
                 <div className="profile-picture">
@@ -92,17 +116,18 @@ function HomePage() {
                         ></span>
                     ))}
                 </div>
-                {/* New Recommended Artists section */}
+
+                {/* Recommended Artists Section */}
                 <h2 className="artists-heading">Recommended Artists</h2>
                 <div className="line"></div>
                 <div className="artists-grid">
                     {recommendedArtists.map((artist, index) => (
                         <div key={index} className="artist-card">
-                        <div className="artist-image-container">
-                            <img src={artist.image} alt={artist.name} className="artist-image" />
-                        </div>
-                        <h3 className="artist-name">{artist.name}</h3>
-                        <p className="artist-genre">{artist.genre}</p>
+                            <div className="artist-image-container">
+                                <img src={artist.image} alt={artist.name} className="artist-image" />
+                            </div>
+                            <h3 className="artist-name">{artist.name}</h3>
+                            <p className="artist-genre">{artist.genre}</p>
                         </div>
                     ))}
                 </div>
