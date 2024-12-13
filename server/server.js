@@ -1,13 +1,11 @@
 var express = require('express');
 var cors = require('cors');
 var querystring = require('querystring');
- 
 
 require("dotenv").config();
 
 const app = express();
-app.use(express.static(__dirname + '/public'))
-   .use(cors());
+app.use(express.static(__dirname + '/public')).use(cors());
 
 const PORT = 5001;
 const fetch = require('node-fetch'); 
@@ -25,13 +23,15 @@ app.get('/', (req, res) => {
 
 
 app.get("/login", (req, res) => {
+    const scope = "user-read-private user-read-email user-top-read";
     const authUrl = "https://accounts.spotify.com/authorize?" +
         querystring.stringify({
             response_type: "code",
             client_id: CLIENT_ID,
-            scope: "user-read-private user-read-email",
+            scope: scope,
             redirect_uri: REDIRECT_URI,
-            prompt: "login"
+            prompt: "login",
+            show_dialog: true,
         });
     res.redirect(authUrl);
 });
@@ -173,6 +173,226 @@ app.get("/api/search", async (req, res) => {
         res.status(500).json({ error: "Failed to fetch search results" });
     }
 });
+
+
+// Only workaround is to go to the search and type in the artist and the search shows similar artists
+app.get("/api/recommend-artists", async (req, res) => {
+    const accessToken = req.headers["authorization"];
+    if (!accessToken) {
+        return res.status(401).json({ error: "Access Token Missing" });
+    }
+
+    try {
+        const limit = 5; // Max number of artists able to fetch
+        const recommendedArtists = []; // To store final recommended artists
+        let final = [];
+        // Fetch user's top artists
+        const topArtistsResponse = await fetch(`https://api.spotify.com/v1/me/top/artists?limit=${limit}`, {
+            method: "GET",
+            headers: { Authorization: `Bearer ${accessToken}` },
+        });
+
+        const topArtistsData = await topArtistsResponse.json();
+
+        if (!topArtistsResponse.ok) {
+            console.error("Error fetching top artists:", topArtistsData);
+            return res.status(topArtistsResponse.status).json({ error: "Failed to fetch top artists" });
+        }
+
+        // Extract artist names
+        const artistNames = topArtistsData.items.map((artist) => artist.name);
+
+        // Use search to find recommended artists 
+        for (const name of artistNames) {
+            try {
+                const searchResponse = await fetch(
+                    `https://api.spotify.com/v1/search?q=${encodeURIComponent(name)}&type=artist&limit=10`,
+                    {
+                        method: "GET",
+                        headers: { Authorization: `Bearer ${accessToken}` },
+                    }
+                );
+
+                const searchData = await searchResponse.json();
+
+                if (searchResponse.ok) {
+                    // console.log(searchData.artists.items);
+                    let doNotAddList = new Set();  // Use Set for efficient duplicate checks
+                    searchData.artists.items.forEach((artist, index) => {
+                        if (artist.external_urls.spotify && artist.images[0]?.url && artist.genres.length > 0) {
+                            if (!artistNames.includes(artist.name) && !doNotAddList.has(artist.name)) {
+                                recommendedArtists.push({
+                                    index: index,
+                                    name: artist.name,
+                                    genre: artist.genres[0],
+                                    image: artist.images[0].url,
+                                    spotify: artist.external_urls.spotify,
+                                });
+                                doNotAddList.add(artist.name);  // Add to Set
+                            }
+                        }
+                    });
+                    
+                    if (recommendedArtists.length > 6) {
+                        const selectedArtists = [];
+                        const selectedIndexes = new Set();
+                        
+                        while (selectedIndexes.size < 6) {
+                            const randomIndex = Math.floor(Math.random() * recommendedArtists.length);
+                            selectedIndexes.add(randomIndex);
+                        }
+                
+                        selectedIndexes.forEach(index => {
+                            selectedArtists.push(recommendedArtists[index]);
+                        });
+                
+                        final = selectedArtists;  // Replace with selected 6 random artists
+                    }
+                
+                } else {
+                    console.error(`Error searching for ${name}:`, searchData);
+                }
+            } catch (error) {
+                console.error(`Error fetching related artists for ${name}:`, error.message);
+            }
+        }
+        res.json(final);
+
+    } catch (error) {
+        console.error("Error fetching top artists:", error.message);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+
+app.get("/api/recommend-songs", async (req, res) => {
+    const accessToken = req.headers["authorization"];
+    if (!accessToken) {
+        return res.status(401).json({ error: "Access Token Missing" });
+    }
+
+    try {
+        const limit = 5; // Max number of tracks able to fetch
+        const recommendedSongs = []; // To store final recommended tracks
+        let final = [];
+        // Fetch user's top tracks
+        const topTracksResponse = await fetch(`https://api.spotify.com/v1/me/top/tracks?limit=${limit}`, {
+            method: "GET",
+            headers: { Authorization: `Bearer ${accessToken}` },
+        });
+        const topTracksData = await topTracksResponse.json();
+
+        if (!topTracksResponse.ok) {
+            console.error("Error fetching top tracks:", topTracksData);
+            return res.status(topTracksResponse.status).json({ error: "Failed to fetch top tracks" });
+        }
+
+        // Extract track names
+        const trackArtistPairs = topTracksData.items.map((track) => {
+            return {
+                trackName: track.name,
+                artistName: track.artists[0]?.name, // Taking the first artist
+            };
+        });
+
+        // Use search to find recommended tracks 
+        for (const pair of trackArtistPairs) {
+            const query = `${pair.trackName} artist:${pair.artistName}`;
+            try {
+                const searchResponse = await fetch(
+                    `https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=10`,
+                    {
+                        method: "GET",
+                        headers: { Authorization: `Bearer ${accessToken}` },
+                    }
+                );
+
+                const searchData = await searchResponse.json();
+
+                if (searchResponse.ok) {
+                    console.log(searchData.tracks.items);
+                    searchData.tracks.items.forEach((item, index) => {
+                        // recommendedSongs[item.name] = {
+                            // artist: item.artists.map((a) => a.name).join(", "),
+                            // spotify: item.external_urls.spotify,
+                            // image: item.album.images[0]?.url || null,
+                        // };
+                        recommendedSongs.push({
+                            index: index,
+                            src: item.album.images[0]?.url || null,
+                            title: item.artists.map((a) => a.name).join(", "),
+                            spotify: item.external_urls.spotify,
+                        });
+                    });
+
+                    
+                    // if (recommendedSongs.length > 6) {
+                    //     const selectedTracks = [];
+                    //     const selectedIndexes = new Set();
+                        
+                    //     while (selectedIndexes.size < 6) {
+                    //         const randomIndex = Math.floor(Math.random() * recommendedSongs.length);
+                    //         selectedIndexes.add(randomIndex);
+                    //     }
+                
+                    //     selectedIndexes.forEach(index => {
+                    //         selectedTracks.push(recommendedSongs[index]);
+                    //     });
+                
+                    //     final = selectedTracks;  // Replace with selected 6 random artists
+                    // }
+
+
+                } else {
+                    console.error(`Error searching for ${pair.trackName}:`, searchData);
+                }
+            } catch (error) {
+                console.error(`Error fetching related tracks for ${pair.trackName}:`, error.message);
+            }
+        }
+        
+        res.json(recommendedSongs);
+
+    } catch (error) {
+        console.error("Error fetching top tracks:", error.message);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+
+// app.get("/api/recommend-songs", async (req, res) => {
+//     const accessToken = req.headers["authorization"];
+//     if (!accessToken) {
+//         return res.status(401).json({ error: "Access Token Missing" });
+//     }
+//     try {
+//         // const searchResponse = await fetch(`https://api.spotify.com/v1/recommendations?seed_artists=3mGGe0UtjJ6BLMk7QYYl59&seed_tracks=3agtg0x11wPvLIWkYR39nZ&limit=10`,
+//         //     {
+//         //         method: "GET",
+//         //         headers: { Authorization: `Bearer ${accessToken}` },
+//         //     }
+//         // );
+
+//         const searchResponse = await fetch(
+//             "https://api.spotify.com/v1/recommendations?seed_artists=3qm84nBOXUEQ2vnTfUTTFC&min_tempo=170&max_tempo=180",
+//             {
+//                 method: "GET",
+//                 headers: { Authorization: `Bearer ${accessToken}` },
+//             }
+//         );
+        
+//         const searchData = await searchResponse.json();
+
+//         if (searchResponse.ok) {
+//             console.log(searchData);
+//         } else {
+//             console.error("Error fetching:", searchData);
+//         }
+//     } catch (error) {
+//         console.error(`Error fetching catch `, error.message);
+//     }
+// });
+
 
 // Start the Express server
 app.listen(PORT, () => {
