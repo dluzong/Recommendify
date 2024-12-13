@@ -3,7 +3,6 @@ import "./LoginPage.css";
 
 const LoginPage = () => {
 
-  // Redirect to the backend Spotify login endpoint
   const handleSpotifyLogin = () => {
     console.log("Redirecting to Spotify...");
     localStorage.removeItem('spotify_access_token');

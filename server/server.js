@@ -165,6 +165,7 @@ app.get("/api/search", async (req, res) => {
         const data = await response.json();
 
         if (response.ok) {
+            console.log(data);
             res.json(data.tracks.items);  // Send back the list of tracks
         } else {
             res.status(response.status).json({ error: "Error fetching search results from Spotify" });
@@ -216,7 +217,6 @@ app.get("/api/recommend-artists", async (req, res) => {
                 const searchData = await searchResponse.json();
 
                 if (searchResponse.ok) {
-                    // console.log(searchData.artists.items);
                     let doNotAddList = new Set();  // Use Set for efficient duplicate checks
                     searchData.artists.items.forEach((artist, index) => {
                         if (artist.external_urls.spotify && artist.images[0]?.url && artist.genres.length > 0) {
@@ -287,14 +287,6 @@ app.get("/api/recommend-songs", async (req, res) => {
             return res.status(topTracksResponse.status).json({ error: "Failed to fetch top tracks" });
         }
 
-        // Extract track names
-        // const trackArtistPairs = topTracksData.items.map((track) => {
-        //     return {
-        //         trackName: track.name,
-        //         artistName: track.artists[0]?.name, // Taking the first artist
-        //     };
-        // });
-
         topTracksData.items.forEach((item, index) => {
             recommendedSongs.push({
                 index: index,
@@ -303,62 +295,6 @@ app.get("/api/recommend-songs", async (req, res) => {
                 spotify: item.external_urls.spotify,
             });
         });
-       
-        // Use search to find recommended tracks 
-        // for (const pair of trackArtistPairs) {
-        //     const query = `${pair.trackName} artist:${pair.artistName}`;
-        //     try {
-        //         const searchResponse = await fetch(
-        //             `https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=10`,
-        //             {
-        //                 method: "GET",
-        //                 headers: { Authorization: `Bearer ${accessToken}` },
-        //             }
-        //         );
-
-        //         const searchData = await searchResponse.json();
-
-        //         if (searchResponse.ok) {
-        //             // console.log(searchData.tracks.items);
-        //             searchData.tracks.items.forEach((item, index) => {
-        //                 // recommendedSongs[item.name] = {
-        //                     // artist: item.artists.map((a) => a.name).join(", "),
-        //                     // spotify: item.external_urls.spotify,
-        //                     // image: item.album.images[0]?.url || null,
-        //                 // };
-        //                 recommendedSongs.push({
-        //                     index: index,
-        //                     src: item.album.images[0]?.url || null, 
-        //                     title: `${item.artists[0]?.name} - ${item.name}`,
-        //                     spotify: item.external_urls.spotify,
-        //                 });
-        //             });
-
-                    
-        //             // if (recommendedSongs.length > 6) {
-        //             //     const selectedTracks = [];
-        //             //     const selectedIndexes = new Set();
-                        
-        //             //     while (selectedIndexes.size < 6) {
-        //             //         const randomIndex = Math.floor(Math.random() * recommendedSongs.length);
-        //             //         selectedIndexes.add(randomIndex);
-        //             //     }
-                
-        //             //     selectedIndexes.forEach(index => {
-        //             //         selectedTracks.push(recommendedSongs[index]);
-        //             //     });
-                
-        //             //     final = selectedTracks;  // Replace with selected 6 random artists
-        //             // }
-
-
-        //         } else {
-        //             console.error(`Error searching for ${pair.trackName}:`, searchData);
-        //         }
-        //     } catch (error) {
-        //         console.error(`Error fetching related tracks for ${pair.trackName}:`, error.message);
-        //     }
-        // }
         
         res.json(recommendedSongs);
 
@@ -367,41 +303,6 @@ app.get("/api/recommend-songs", async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 });
-
-
-// app.get("/api/recommend-songs", async (req, res) => {
-//     const accessToken = req.headers["authorization"];
-//     if (!accessToken) {
-//         return res.status(401).json({ error: "Access Token Missing" });
-//     }
-//     try {
-//         // const searchResponse = await fetch(`https://api.spotify.com/v1/recommendations?seed_artists=3mGGe0UtjJ6BLMk7QYYl59&seed_tracks=3agtg0x11wPvLIWkYR39nZ&limit=10`,
-//         //     {
-//         //         method: "GET",
-//         //         headers: { Authorization: `Bearer ${accessToken}` },
-//         //     }
-//         // );
-
-//         const searchResponse = await fetch(
-//             "https://api.spotify.com/v1/recommendations?seed_artists=3qm84nBOXUEQ2vnTfUTTFC&min_tempo=170&max_tempo=180",
-//             {
-//                 method: "GET",
-//                 headers: { Authorization: `Bearer ${accessToken}` },
-//             }
-//         );
-        
-//         const searchData = await searchResponse.json();
-
-//         if (searchResponse.ok) {
-//             console.log(searchData);
-//         } else {
-//             console.error("Error fetching:", searchData);
-//         }
-//     } catch (error) {
-//         console.error(`Error fetching catch `, error.message);
-//     }
-// });
-
 
 // Start the Express server
 app.listen(PORT, () => {

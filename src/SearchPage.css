@@ -116,3 +116,78 @@ main {
     margin: 10px 0px; 
     border: none;
 }
+
+
+.search-results {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    padding: 20px;
+}
+
+.track-card {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 10px;
+    width: 400px;
+    transition: transform 0.2s;
+}
+
+.track-card:hover {
+    transform: translateY(-5px);
+}
+
+.track-image {
+    width: 50%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.track-details {
+    text-align: center;
+    margin: 10px 25px 0;
+}
+
+.track-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    margin: 0;
+}
+
+.artist-name {
+    font-size: 14px;
+    color: #666;
+    margin: 5px 0 0;
+}
+
+.add-button {
+    /* position: absolute; */
+    /* bottom: 10px;  */
+    /* right: 10px;  */
+    width: 40px;
+    height: 40px;
+    border-radius: 50%; 
+    background-color: #9290C3;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    /* z-index: 3; */
+    /* display: flex;
+    justify-content: center;
+    align-items: center; */
+    box-shadow: 0 4px 6px rgb(24, 24, 24);
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.add-button:hover {
+    transform: scale(1.1);
+    opacity: 0.9;
+}

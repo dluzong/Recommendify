@@ -1,39 +1,51 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from 'react-router-dom'; // Importing useNavigate from react-router-dom
+import { useLocation, useNavigate } from 'react-router-dom';
 import './HomePage.css';
 
 function HomePage() {
+    const location = useLocation();
+    const navigate = useNavigate();
+
     const [currentIndex, setCurrentIndex] = useState(0);
     const [searchQuery, setSearchQuery] = useState('');
-    const navigate = useNavigate(); // Initialize the navigation hook
-
     const [recommendedArtists, setRecommendedArtists] = useState(null);
     const [images, setImages] = useState(null);
-
-    useEffect(() => {
-        const params = new URLSearchParams(window.location.search);
-        const accessToken = params.get("access_token");
     
+    const handleDotClick = (index) => {
+        setCurrentIndex(index);
+    };
+
+    const goToPrevious = () => {
+        setCurrentIndex((prevIndex) => (prevIndex === 0 ? images.length - 1 : prevIndex - 1));
+    };
+
+    const goToNext = () => {
+        setCurrentIndex((prevIndex) => (prevIndex === images.length - 1 ? 0 : prevIndex + 1));
+    };
+
+    const handleSearchChange = (event) => {
+        setSearchQuery(event.target.value);
+    };
+
+    const handleSearchSubmit = (event) => {
+        if (searchQuery.trim() !== '') {
+            const storedToken = localStorage.getItem("spotify_token");
+            navigate(`/search?query=${searchQuery}&access_token=${storedToken}`);
+        } else {
+            alert('Please enter a search term');
+        }
+    };
+    
+    useEffect(() => {
+        const tokenParams = new URLSearchParams(location.search);
+        const accessToken = tokenParams.get("access_token");
         if (accessToken) {
             localStorage.setItem("spotify_token", accessToken);
-            window.history.replaceState({}, document.title, window.location.pathname);
-        }
-    
-        const storedToken = localStorage.getItem("spotify_token");
-    
-        if (storedToken) {
-            // fetch("http://localhost:5001/api/spotify-profile", {
-            //     headers: {
-            //         Authorization: storedToken,
-            //     },
-            // })
-            //     .then((res) => res.json())
-            //     .then((data) => setProfileData(data))
-            //     .catch((err) => console.error("Error fetching profile:", err));
+            window.history.replaceState({}, document.title, location.pathname);
     
             fetch("http://localhost:5001/api/recommend-artists", {
                 headers: {
-                    Authorization: storedToken,
+                    Authorization: accessToken,
                 },
             })
                 .then((res) => res.json())
@@ -42,7 +54,7 @@ function HomePage() {
 
             fetch("http://localhost:5001/api/recommend-songs", {
                 headers: {
-                    Authorization: storedToken,
+                    Authorization: accessToken,
                 },
             })
                 .then((res) => res.json())
@@ -62,18 +74,6 @@ function HomePage() {
     //     { src: "https://preview.redd.it/every-ariana-grande-album-and-ep-cover-art-in-very-high-v0-dhx14du2o8ob1.jpg?width=3600&format=pjpg&auto=webp&s=056e757d011823e2f4c96c22c9c8c331fa7c03a0", title: "Ariana Grande - Side To Side " },
     // ];
 
-    const handleDotClick = (index) => {
-        setCurrentIndex(index);
-    };
-
-    const goToPrevious = () => {
-        setCurrentIndex((prevIndex) => (prevIndex === 0 ? images.length - 1 : prevIndex - 1));
-    };
-
-    const goToNext = () => {
-        setCurrentIndex((prevIndex) => (prevIndex === images.length - 1 ? 0 : prevIndex + 1));
-    };
-
     // const recommendedArtists = [
     //     { name: "Tyla", genre: "Afropop", image: "https://media.vanityfair.com/photos/66198fc554db4652985baf00/4:3/w_1600,h_1200,c_limit/202405-van-opener-tyla01.jpg" },
     //     { name: "Taylor Swift", genre: "Pop", image: "https://i.pinimg.com/236x/69/79/7d/69797d9bfaa93754379a67b845293ea4.jpg" },
@@ -82,24 +82,6 @@ function HomePage() {
     //     { name: "Beyoncé", genre: "R&B", image: "https://metro.co.uk/wp-content/uploads/2023/03/SEI_148621909-b014.jpg?quality=90&strip=all&w=646" },
     //     { name: "The Rolling Stones", genre: "Rock", image: "https://cdn.britannica.com/41/197341-050-4859B808/The-Rolling-Stones-Bill-Wyman-Keith-Richards-1964.jpg" }
     // ];
-
-    // Handle search query input change
-    const handleSearchChange = (event) => {
-        setSearchQuery(event.target.value);
-    };
-
-    // Redirect to search results page
-    const handleSearchSubmit = (event) => {
-        // Add logging to check if the function is being triggered on click
-        console.log('Search submitted:', searchQuery);
-
-        // Check if searchQuery is not empty before navigating
-        if (searchQuery.trim() !== '') {
-            navigate(`/search?query=${searchQuery}`); // Redirect to the search page with query param
-        } else {
-            alert('Please enter a search term');
-        }
-    };
 
     return (
         <div className="home-page">
@@ -112,9 +94,9 @@ function HomePage() {
                         placeholder="Search..."
                         value={searchQuery}
                         onChange={handleSearchChange}
-                        onKeyDown={(e) => e.key === 'Enter' && handleSearchSubmit(e)}  // Listen for Enter key
+                        onKeyDown={(e) => e.key === 'Enter' && handleSearchSubmit(e)}
                     />
-                    <span className="magnifying-glass" onClick={handleSearchSubmit}>🔍</span> {/* Click to trigger search */}
+                    <span className="magnifying-glass" onClick={handleSearchSubmit}>🔍</span>
                 </div>
                 <button className="logout-button">Logout</button>
                 <div className="profile-picture">
@@ -145,13 +127,13 @@ function HomePage() {
                                 return (
                                     <div className={`carousel-item ${position}`} key={index}>
                                         <img src={image.src} alt={image.title} />
-                                        <p className="song-title">{image.title}</p> {/* Title on image */}
-                                        <button className="add-button">+</button> {/* '+' Button */}
+                                        <p className="song-title">{image.title}</p>
+                                        {/* <button className="add-button">+</button> */}
                                     </div>
                                 );
                             })
                         ) : (
-                            <p>Loading...</p> // Display a loading message while data is being fetched
+                            <p>Loading...</p>
                         )}
                     </div>
                     <button className="carousel-button right" onClick={goToNext}>
@@ -168,24 +150,12 @@ function HomePage() {
                             ></span>
                         ))
                     ) : (
-                        <span className="dot">...</span> // Placeholder for dots while loading
+                        <span className="dot">...</span>
                     )}
                 </div>
 
-                {/* Recommended Artists Section */}
                 <h2 className="artists-heading">Recommended Artists</h2>
                 <div className="line"></div>
-                {/* <div className="artists-grid">
-                    {recommendedArtists.map((artist, index) => (
-                        <div key={index} className="artist-card">
-                            <div className="artist-image-container">
-                                <img src={artist.image} alt={artist.name} className="artist-image" />
-                            </div>
-                            <h3 className="artist-name">{artist.name}</h3>
-                            <p className="artist-genre">{artist.genre}</p>
-                        </div>
-                    ))}
-                </div> */}
                 <div className="artists-grid">
                 {recommendedArtists ? (
                     recommendedArtists.map((artist, index) => (
