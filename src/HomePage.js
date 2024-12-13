@@ -123,14 +123,14 @@ function HomePage() {
             </header>
 
             <main className="recommended-section">
-            <h2>Recommended Songs</h2>
+            <h2>Top Songs</h2>
                 <div className="line"></div>
                 <div className="carousel-container">
                     <button className="carousel-button left" onClick={goToPrevious}>
                         ❮
                     </button>
                     <div className="carousel">
-                        {images && images.length > 0 ? (
+                        {images ? (
                             images.map((image, index) => {
                                 let position = "hidden"; // Default state
 
@@ -159,7 +159,7 @@ function HomePage() {
                     </button>
                 </div>
                 <div className="carousel-dots">
-                    {images && images.length > 0 ? (
+                    {images ? (
                         images.map((_, index) => (
                             <span
                                 key={index}

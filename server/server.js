@@ -288,68 +288,77 @@ app.get("/api/recommend-songs", async (req, res) => {
         }
 
         // Extract track names
-        const trackArtistPairs = topTracksData.items.map((track) => {
-            return {
-                trackName: track.name,
-                artistName: track.artists[0]?.name, // Taking the first artist
-            };
+        // const trackArtistPairs = topTracksData.items.map((track) => {
+        //     return {
+        //         trackName: track.name,
+        //         artistName: track.artists[0]?.name, // Taking the first artist
+        //     };
+        // });
+
+        topTracksData.items.forEach((item, index) => {
+            recommendedSongs.push({
+                index: index,
+                src: item.album.images[0]?.url || null, 
+                title: `${item.artists[0]?.name} - ${item.name}`,
+                spotify: item.external_urls.spotify,
+            });
         });
-
+       
         // Use search to find recommended tracks 
-        for (const pair of trackArtistPairs) {
-            const query = `${pair.trackName} artist:${pair.artistName}`;
-            try {
-                const searchResponse = await fetch(
-                    `https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=10`,
-                    {
-                        method: "GET",
-                        headers: { Authorization: `Bearer ${accessToken}` },
-                    }
-                );
+        // for (const pair of trackArtistPairs) {
+        //     const query = `${pair.trackName} artist:${pair.artistName}`;
+        //     try {
+        //         const searchResponse = await fetch(
+        //             `https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=10`,
+        //             {
+        //                 method: "GET",
+        //                 headers: { Authorization: `Bearer ${accessToken}` },
+        //             }
+        //         );
 
-                const searchData = await searchResponse.json();
+        //         const searchData = await searchResponse.json();
 
-                if (searchResponse.ok) {
-                    console.log(searchData.tracks.items);
-                    searchData.tracks.items.forEach((item, index) => {
-                        // recommendedSongs[item.name] = {
-                            // artist: item.artists.map((a) => a.name).join(", "),
-                            // spotify: item.external_urls.spotify,
-                            // image: item.album.images[0]?.url || null,
-                        // };
-                        recommendedSongs.push({
-                            index: index,
-                            src: item.album.images[0]?.url || null,
-                            title: item.artists.map((a) => a.name).join(", "),
-                            spotify: item.external_urls.spotify,
-                        });
-                    });
+        //         if (searchResponse.ok) {
+        //             // console.log(searchData.tracks.items);
+        //             searchData.tracks.items.forEach((item, index) => {
+        //                 // recommendedSongs[item.name] = {
+        //                     // artist: item.artists.map((a) => a.name).join(", "),
+        //                     // spotify: item.external_urls.spotify,
+        //                     // image: item.album.images[0]?.url || null,
+        //                 // };
+        //                 recommendedSongs.push({
+        //                     index: index,
+        //                     src: item.album.images[0]?.url || null, 
+        //                     title: `${item.artists[0]?.name} - ${item.name}`,
+        //                     spotify: item.external_urls.spotify,
+        //                 });
+        //             });
 
                     
-                    // if (recommendedSongs.length > 6) {
-                    //     const selectedTracks = [];
-                    //     const selectedIndexes = new Set();
+        //             // if (recommendedSongs.length > 6) {
+        //             //     const selectedTracks = [];
+        //             //     const selectedIndexes = new Set();
                         
-                    //     while (selectedIndexes.size < 6) {
-                    //         const randomIndex = Math.floor(Math.random() * recommendedSongs.length);
-                    //         selectedIndexes.add(randomIndex);
-                    //     }
+        //             //     while (selectedIndexes.size < 6) {
+        //             //         const randomIndex = Math.floor(Math.random() * recommendedSongs.length);
+        //             //         selectedIndexes.add(randomIndex);
+        //             //     }
                 
-                    //     selectedIndexes.forEach(index => {
-                    //         selectedTracks.push(recommendedSongs[index]);
-                    //     });
+        //             //     selectedIndexes.forEach(index => {
+        //             //         selectedTracks.push(recommendedSongs[index]);
+        //             //     });
                 
-                    //     final = selectedTracks;  // Replace with selected 6 random artists
-                    // }
+        //             //     final = selectedTracks;  // Replace with selected 6 random artists
+        //             // }
 
 
-                } else {
-                    console.error(`Error searching for ${pair.trackName}:`, searchData);
-                }
-            } catch (error) {
-                console.error(`Error fetching related tracks for ${pair.trackName}:`, error.message);
-            }
-        }
+        //         } else {
+        //             console.error(`Error searching for ${pair.trackName}:`, searchData);
+        //         }
+        //     } catch (error) {
+        //         console.error(`Error fetching related tracks for ${pair.trackName}:`, error.message);
+        //     }
+        // }
         
         res.json(recommendedSongs);
 
@@ -393,57 +402,6 @@ app.get("/api/recommend-songs", async (req, res) => {
 //     }
 // });
 
-// // Error fetching related artists: { error: { status: 404, message: 'Not Found' } }
-// app.get("/api/top-artists", async (req, res) => {
-//     const accessToken = req.headers["authorization"];
-//     if (!accessToken) {
-//         return res.status(401).json({ error: "Access Token Missing" });
-//     }
-
-//     try {
-//         const limit = 5;
-
-//         // Step 1: Fetch User's Top Artists
-//         const topArtistsResponse = await fetch(`https://api.spotify.com/v1/me/top/artists?limit=${limit}`, {
-//             method: "GET",
-//             headers: { Authorization: `Bearer ${accessToken}` },
-//         });
-
-//         const topArtistsData = await topArtistsResponse.json();
-
-//         if (!topArtistsResponse.ok) {
-//             console.error("Error fetching top artists:", topArtistsData);
-//             return res.status(topArtistsResponse.status).json({ error: "Failed to fetch top artists" });
-//         }
-
-//         const artistIds = topArtistsData.items.map((artist) => artist.id);
-
-//         // Step 2: Fetch Related Artists for Each Top Artist
-//         const relatedArtistsPromises = artistIds.map(async (id) => {
-//             const relatedResponse = await fetch(`https://api.spotify.com/v1/artists/${encodeURIComponent(id)}/related-artists`, {
-//                 method: "GET",
-//                 headers: { Authorization: `Bearer ${accessToken}` },
-//             });
-
-//             const relatedData = await relatedResponse.json();
-//             if (relatedResponse.ok) {
-//                 return relatedData.artists.map((artist) => artist.name);
-//             } else {
-//                 console.error(`Error fetching related artists for ID ${id}:`, relatedData);
-//                 return [];
-//             }
-//         });
-
-//         // Resolve all promises and flatten the array
-//         const relatedArtistsArrays = await Promise.all(relatedArtistsPromises);
-//         const recommendedArtists = [...new Set(relatedArtistsArrays.flat())]; // Remove duplicates
-
-//         res.json({ recommendedArtists });
-//     } catch (error) {
-//         console.error("Error in /api/top-artists:", error.message);
-//         res.status(500).json({ error: "Failed to fetch top artists or recommendations" });
-//     }
-// });
 
 // Start the Express server
 app.listen(PORT, () => {
