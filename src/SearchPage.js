@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import './SearchPage.css';
 
 function SearchPage() {
@@ -63,7 +63,11 @@ function SearchPage() {
         <div className="search-page">
             {/* Reusable Header */}
             <header className="header">
-                <div className="logo">Recommendify</div>
+                <div className="logo">
+                    <Link to={"/home"}>
+                        Recommendify
+                    </Link>
+                </div>
                 <div className="search-bar-container">
                     <input
                         type="text"

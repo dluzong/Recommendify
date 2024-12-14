@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import './HomePage.css';
 
 function HomePage() {
@@ -100,7 +100,9 @@ function HomePage() {
                 </div>
                 <button className="logout-button">Logout</button>
                 <div className="profile-picture">
-                    <img src="/assets/ProfilePic.avif" alt="Profile" />
+                    <Link to={"/profile"}>
+                        <img src="/assets/ProfilePic.avif" alt="Profile" />
+                    </Link>
                 </div>
             </header>
 

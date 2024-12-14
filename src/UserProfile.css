@@ -27,6 +27,11 @@ body {
     font-weight: bold;
 }
 
+.logo a {
+    text-decoration: none; /* Removes underline */
+    color: inherit;
+}
+
 .logout-button {
     background-color: #9290C3;
     color: white;

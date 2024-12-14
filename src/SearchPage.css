@@ -24,6 +24,11 @@ body {
     font-weight: bold;
 }
 
+.logo a {
+    text-decoration: none; /* Removes underline */
+    color: inherit;
+}
+
 .search-bar-container {
     position: relative;
     flex: 1;

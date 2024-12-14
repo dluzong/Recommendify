@@ -6,7 +6,6 @@ import SearchPage from './SearchPage';
 import UserProfile from './UserProfile';
 
 function App() {
-  const [backendData, setBackendData] = useState([{}]);
 
   return (
     <Router>

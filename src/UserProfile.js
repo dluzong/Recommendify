@@ -1,5 +1,5 @@
 import React from "react";
-import {useNavigate } from 'react-router-dom';
+import {Link, useNavigate } from 'react-router-dom';
 import "./UserProfile.css";
 
 const UserProfile = () => {
@@ -13,7 +13,11 @@ const UserProfile = () => {
     return (
         <div className="user-profile">
             <header className="header">
-                <div className="logo">Recommendify</div>
+                <div className="logo">
+                    <Link to={"/home"}>
+                        Recommendify
+                    </Link>
+                </div>
                 <div>
                     <button className="logout-button" onClick={handleHome}>Home</button>
                     <button className="logout-button">Logout</button>
