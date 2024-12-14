@@ -66,8 +66,8 @@ body {
     margin-bottom: 10px;
 }
 
-.line {
-    width: 50%;
+.user-profile .line {
+    width: 75%;
     height: 2px;
     background-color: #727DBE;
     margin: 0 auto 20px;
@@ -76,20 +76,23 @@ body {
 .profile-data {
     display: flex;
     gap: 20px;
-    padding: 10px 50px;
+    padding: 10px;
+    justify-content: center;
+    margin-left: 12%;
+    margin-right: 12%;
 }
 
 .profile-data .left-column {
-    flex: 1;
+    flex: 3;
     /* border: 1px solid #ccc; */
-    padding: 20px;
+    /* padding: 20px; */
     background-color: #1B1A55;
 }
 
 .profile-data .right-column {
     flex: 1;
     /* border: 1px solid #ccc; */
-    padding: 20px;
+    /* padding: 20px; */
     background-color: #1B1A55;
 }
 
@@ -97,7 +100,6 @@ body {
     color: #9290C3;
     font-size: 40px;
     margin-bottom: 10px;
-    text-align: center;
 }
 
 /* .playlists {
