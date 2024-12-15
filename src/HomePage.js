@@ -38,6 +38,11 @@ function HomePage() {
             alert('Please enter a search term');
         }
     };
+
+    const handleLogout = () => {
+        localStorage.removeItem("spotify_token"); // clearing the stored token
+        navigate("/"); // redirect user to the login page
+    };
     
     useEffect(() => {
         const tokenParams = new URLSearchParams(location.search);
@@ -101,7 +106,7 @@ function HomePage() {
                     />
                     <span className="magnifying-glass" onClick={handleSearchSubmit}>🔍</span>
                 </div>
-                <button className="logout-button">Logout</button>
+                <button className="logout-button" onClick={handleLogout}>Logout</button>
                 <div className="profile-picture">
                     <Link to={"/profile"}>
                         <img src={profileImage} alt="Profile" />

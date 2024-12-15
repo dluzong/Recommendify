@@ -44,6 +44,11 @@ function SearchPage() {
         }
     };
 
+    const handleLogout = () => {
+        localStorage.removeItem("spotify_token"); // clearing the stored token
+        navigate("/"); // redirect user to the login page
+    };
+
     const handleHome = () => {
         const storedToken = localStorage.getItem("spotify_token");
         navigate(`/home?access_token=${storedToken}`);
@@ -203,7 +208,7 @@ function SearchPage() {
                     <span className="magnifying-glass" onClick={handleSearchSubmit}>🔍</span>
                 </div>
                 <button className="logout-button" onClick={handleHome}>Home</button>
-                <button className="logout-button">Logout</button>
+                <button className="logout-button" onClick={handleLogout}>Logout</button>
                 <div className="profile-picture">
                     <Link to={"/profile"}>
                         <img src={profileImage} alt="Profile" />

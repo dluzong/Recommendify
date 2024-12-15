@@ -39,6 +39,11 @@ const UserProfile = () => {
         }
     };
 
+    const handleLogout = () => {
+        localStorage.removeItem("spotify_token"); // clearing the stored token
+        navigate("/"); // redirect user to the login page
+    };
+
     useEffect(() => {
         fetchTopArtists();
     }, []);
@@ -51,7 +56,7 @@ const UserProfile = () => {
                 </div>
                 <div>
                     <button className="logout-button" onClick={handleHome}>Home</button>
-                    <button className="logout-button">Logout</button>
+                    <button className="logout-button" onClick={handleLogout}>Logout</button>
                 </div>
             </header>
 
