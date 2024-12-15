@@ -137,6 +137,64 @@ function SearchPage() {
             console.error("Error creating playlist or adding track:", error);
         }
     };
+
+    const handleCreatePlaylistAll = async () => {
+        const storedToken = localStorage.getItem("spotify_token");
+
+    if (!searchResults || searchResults.length === 0) {
+        alert("No search results to create a playlist. Try searching for something!");
+        return;
+    }
+
+    try {
+        // Step 1: Create a new playlist
+        const createPlaylistResponse = await fetch("https://api.spotify.com/v1/me/playlists", {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${storedToken}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                name: `Recommendify Playlist - ${searchQuery}`,
+                public: false,
+            }),
+        });
+
+        const playlistData = await createPlaylistResponse.json();
+
+        if (!playlistData.id) {
+            console.error("Error creating playlist:", playlistData);
+            alert("Failed to create a playlist. Please try again.");
+            return;
+        }
+
+        // Step 2: Add tracks to the newly created playlist
+        const trackUris = searchResults.slice(0, 20).map((track) => track.uri); // Limit to 20 tracks
+        const addTracksResponse = await fetch(`https://api.spotify.com/v1/playlists/${playlistData.id}/tracks`, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${storedToken}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                uris: trackUris,
+            }),
+        });
+
+        const addTracksData = await addTracksResponse.json();
+
+        if (addTracksData.snapshot_id) {
+            alert(`Playlist "${playlistData.name}" created successfully!`);
+        } else {
+            console.error("Failed to add tracks:", addTracksData);
+            alert("Failed to add tracks to the playlist. Please try again.");
+        }
+    } catch (error) {
+        console.error("Error creating playlist or adding tracks:", error);
+        alert("An error occurred. Please try again.");
+    }
+
+    };
     
 
     const handleCloseModal = () => {
@@ -221,6 +279,7 @@ function SearchPage() {
                 <div className="search-results-header">
                     <h2>Search Results for: {submittedQuery}</h2> {/* Show submitted query */}
                     {/*<button className="create-playlist-button">Create Playlist</button>*/}
+                    <button className="create-playlist-button" onClick={handleCreatePlaylistAll}>Create Playlist</button>
                 </div>
                 <div className="divider"></div>
                 <div className="search-results">
