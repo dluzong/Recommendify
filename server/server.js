@@ -23,7 +23,7 @@ app.get('/', (req, res) => {
 
 
 app.get("/login", (req, res) => {
-    const scope = "user-read-private user-read-email user-top-read";
+    const scope = "user-read-private user-read-email user-top-read playlist-modify-public playlist-modify-private playlist-read-private";
     const authUrl = "https://accounts.spotify.com/authorize?" +
         querystring.stringify({
             response_type: "code",
@@ -331,6 +331,45 @@ app.get("/api/recommend-songs", async (req, res) => {
     } catch (error) {
         console.error("Error fetching top tracks:", error.message);
         res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+app.post("/api/add-to-playlist", async (req, res) => {
+    const { playlistId, trackUri } = req.body; 
+    const accessToken = req.headers["authorization"];
+
+    if (!accessToken) {
+        return res.status(401).json({ error: "Access Token Missing" });
+    }
+
+    if (!playlistId || !trackUri) {
+        return res.status(400).json({ error: "Playlist ID and Track URI are required" });
+    }
+
+    try {
+        // Add the track to the specified playlist
+        const response = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                uris: [trackUri], 
+            }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            res.json(data); 
+        } else {
+            console.error("Error adding track to playlist:", data);
+            res.status(response.status).json({ error: "Failed to add track to playlist" });
+        }
+    } catch (error) {
+        console.error("Error adding track to playlist:", error.message);
+        res.status(500).json({ error: "Failed to add track to playlist" });
     }
 });
 

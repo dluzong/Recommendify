@@ -5,6 +5,7 @@ import LoginPage from './LoginPage';
 import HomePage from './HomePage';
 import SearchPage from './SearchPage';
 import UserProfile from './UserProfile';
+import PlaylistPage from './PlaylistPage'; // Import the PlaylistPage component
 
 function App() {
 
@@ -20,6 +21,8 @@ function App() {
           <Route path="/search" element={<SearchPage />} />
           {/* adding a route for the UserProfile */}
           <Route path="/profile" element={<UserProfile />} />
+          {/* adding a route for the PlaylistPage */}
+          <Route path="/playlist/:id" element={<PlaylistPage />} />
         </Routes>
       </Router>
     </ProfileProvider>

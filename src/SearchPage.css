@@ -16,7 +16,7 @@ body {
     justify-content: space-between;
     padding: 0 20px;
     height: 60px;
-    margin-top: 5px; /*i think this needs to be added to the other pages too*/
+    margin-top: 5px;
 }
 
 .logo-nav {
@@ -87,7 +87,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-top: 30px; /* previous value was 20px */
+    margin-top: 30px;
 }
 
 main {
@@ -102,7 +102,6 @@ main {
     font-size: 24px;
 }
 
-/*background-color: #727DBE;*/
 .create-playlist-button {
     background-color: #9290C3;
     color: white;
@@ -115,7 +114,7 @@ main {
 }
 
 .create-playlist-button:hover {
-    opacity: 0.9; /* take out? */
+    opacity: 0.9;
 }
 
 .divider {
@@ -141,7 +140,6 @@ main {
     justify-content: space-between;
     padding: 10px 0px;
     width: 107%;
-    /* max-width: 800px; /* Align cards within a max width */
     border-radius: 8px;
     transition: transform 0.2s;
 }
@@ -159,10 +157,9 @@ main {
 
 .track-details {
     text-align: left;
-    margin-left: 50px; /* adjusts the spacing btwn card & text */
+    margin-left: 50px;
     flex: 1;
 }
-
 
 .track-name {
     font-size: 16px;
@@ -177,90 +174,102 @@ main {
     margin: 5px 0 0;
 }
 
+.add-button-container {
+    position: relative; 
+}
+
 .add-button {
-    /* position: absolute; */
-    /* bottom: 10px;  */
-    /* right: 10px;  */
-    top: 50%;
+    position: relative; 
     width: 40px;
     height: 40px;
-    border-radius: 50%; 
+    border-radius: 50%;
     background-color: #9290C3;
     color: white;
     font-size: 24px;
     font-weight: bold;
     border: none;
     cursor: pointer;
-    /* z-index: 3; */
-    /*display: flex;
-    justify-content: center;
-    align-items: center; */
     box-shadow: 0 4px 6px rgb(24, 24, 24);
     transition: transform 0.2s ease, opacity 0.2s ease;
-}
-
-
-.add-button:hover {
-    transform: scale(1.1);
-    opacity: 0.9;
-}
-
-/* SearchPage.css */
-
-/* Overlay for the popup */
-.popup-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
-    z-index: 1000; /* Ensure it appears above everything else */
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-/* Content for the popup */
-.popup-content {
+.add-button:hover {
+    transform: scale(1.1);
+    opacity: 0.9;
+    position: relative;
+}
+
+.playlist-modal {
+    position: absolute;
     background-color: white;
+    padding: 15px; 
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    width: 150px; 
     border-radius: 8px;
-    padding: 20px;
-    width: 400px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25); /* Subtle shadow */
-    text-align: center;
-    z-index: 1100; /* Above overlay */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;  /* Ensures space between elements */
+    top: -10px; 
+    left: calc(100% - 330px); 
+    margin-left: 10px; 
 }
 
-/* Close button styling */
-.popup-content button {
-    margin-top: 10px;
-    padding: 10px 15px;
+.modal-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; 
+}
+
+.playlist-list {
+    max-height: 200px;
+    overflow-y: auto;
+    display: flex; /* Makes sure the children are aligned in a column */
+    flex-direction: column; /* Aligns items vertically */
+    gap: 10px; /* Adds space between each playlist item */
+}
+
+.playlist-option {
+    background-color: #1B1A55; 
+    color: white; 
     border: none;
-    background-color: #1db954; /* Spotify green */
-    color: white;
-    border-radius: 5px;
+    padding: 10px 15px;
+    font-size: 14px;
     cursor: pointer;
-    font-weight: bold;
-}
-
-.popup-content button:hover {
-    background-color: #1aa34a;
-}
-
-/* Genre dropdown and input styling */
-.popup-content label {
-    display: block;
-    margin: 10px 0;
-    font-weight: bold;
-    text-align: left;
-}
-
-.popup-content select,
-.popup-content input {
-    width: 100%;
-    padding: 8px;
-    margin-top: 5px;
-    border: 1px solid #ccc;
     border-radius: 5px;
+    transition: background-color 0.3s ease;
+    width: 100%; /* Ensures each button takes up full width, stacking them below */
+}
+
+.playlist-option:hover {
+    background-color: #2c2a8a; /* Slight hover color change for better UX */
+}
+
+.playlist-modal input[type="text"] {
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.playlist-modal .create-playlist-button, .playlist-modal .close-option {
+    background-color: #1B1A55; 
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.playlist-modal .create-playlist-button:hover {
+    background-color: green;
+}
+
+.playlist-modal .close-option:hover {
+    background-color: red;
 }

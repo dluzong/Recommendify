@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useProfile } from './ProfileContext';
 import './SearchPage.css';
@@ -10,9 +10,16 @@ function SearchPage() {
     const [searchQuery, setSearchQuery] = useState(new URLSearchParams(location.search).get('query') || '');
     const [submittedQuery, setSubmittedQuery] = useState(searchQuery);
     const [searchResults, setSearchResults] = useState(null);
+    const [showPlaylistModal, setShowPlaylistModal] = useState(false);
+    const [playlists, setPlaylists] = useState([]);
+    const [selectedTrack, setSelectedTrack] = useState(null);
+    const [newPlaylistName, setNewPlaylistName] = useState('');
+    const [modalPosition, setModalPosition] = useState({ top: 0, left: 0 });
+    const [selectedTrackId, setSelectedTrackId] = useState(null);  
 
     const { displayName, profileImage } = useProfile();
-    
+    const addButtonRef = useRef(null); 
+
     const handleSearchChange = (event) => {
         setSearchQuery(event.target.value); 
     };
@@ -42,6 +49,96 @@ function SearchPage() {
         navigate(`/home?access_token=${storedToken}`);
     };
 
+    const handleAddToPlaylist = (track) => {
+        setSelectedTrackId(track.id); 
+        setSelectedTrack(track); 
+        const storedToken = localStorage.getItem("spotify_token");
+    
+        fetch("https://api.spotify.com/v1/me/playlists", {
+            headers: {
+                Authorization: `Bearer ${storedToken}`,
+            },
+        })
+            .then((res) => res.json())
+            .then((data) => {
+                setPlaylists(data.items); 
+                setShowPlaylistModal(true); 
+            })
+            .catch((err) => console.error("Error fetching playlists:", err));
+    };
+
+    const handlePlaylistSelect = (playlistId) => {
+        const storedToken = localStorage.getItem("spotify_token");
+    
+        fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${storedToken}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                uris: [selectedTrack.uri],
+            }),
+        })
+            .then((res) => res.json())
+            .then(() => {
+                alert('Track added to playlist');
+                setShowPlaylistModal(false);
+                setSelectedTrackId(null); 
+                navigate(`/playlist/${playlistId}`); 
+            })
+            .catch((err) => console.error("Error adding track:", err));
+    };
+    
+    const handleCreateNewPlaylist = async () => {
+        const storedToken = localStorage.getItem("spotify_token");
+    
+        try {
+            const createPlaylistResponse = await fetch("https://api.spotify.com/v1/me/playlists", {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${storedToken}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: newPlaylistName,
+                    public: false, 
+                }),
+            });
+    
+            const playlistData = await createPlaylistResponse.json();
+    
+            const addTrackResponse = await fetch(`https://api.spotify.com/v1/playlists/${playlistData.id}/tracks`, {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${storedToken}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    uris: [selectedTrack.uri], 
+                }),
+            });
+    
+            const addTrackData = await addTrackResponse.json();
+    
+            if (addTrackData.snapshot_id) {
+                setShowPlaylistModal(false);
+                setSelectedTrackId(null); 
+                navigate(`/playlist/${playlistData.id}`); 
+            } else {
+                console.error("Failed to add track to playlist");
+            }
+        } catch (error) {
+            console.error("Error creating playlist or adding track:", error);
+        }
+    };
+    
+
+    const handleCloseModal = () => {
+        setShowPlaylistModal(false); 
+        setSelectedTrackId(null); 
+    };
+
     useEffect(() => {
         const queryParams = new URLSearchParams(location.search);
         const query = queryParams.get('query');
@@ -57,7 +154,7 @@ function SearchPage() {
             setSubmittedQuery(query); 
         }
     }, [location.search]);
-    
+
     useEffect(() => {
         if (submittedQuery.trim() !== '') {
             const storedToken = localStorage.getItem("spotify_token");
@@ -85,8 +182,7 @@ function SearchPage() {
                     setSearchResults([]); 
                 });
         }
-    }, [submittedQuery]); 
-    
+    }, [submittedQuery]);
 
     return (
         <div className="search-page">
@@ -102,7 +198,7 @@ function SearchPage() {
                         placeholder="Search..."
                         value={searchQuery}
                         onChange={handleSearchChange}
-                        onKeyDown={(e) => e.key === 'Enter' && handleSearchSubmit()} // Submit search on Enter
+                        onKeyDown={(e) => e.key === 'Enter' && handleSearchSubmit()} 
                     />
                     <span className="magnifying-glass" onClick={handleSearchSubmit}>🔍</span>
                 </div>
@@ -119,7 +215,7 @@ function SearchPage() {
             <main>
                 <div className="search-results-header">
                     <h2>Search Results for: {submittedQuery}</h2> {/* Show submitted query */}
-                    <button className="create-playlist-button">Create Playlist</button>
+                    {/*<button className="create-playlist-button">Create Playlist</button>*/}
                 </div>
                 <div className="divider"></div>
                 <div className="search-results">
@@ -135,7 +231,44 @@ function SearchPage() {
                                     <h3 className="track-name">{track.name}</h3>
                                     <p className="artist-name">{track.artists[0]?.name || "Unknown Artist"}</p>
                                 </div>
-                                <button className="add-button">+</button>
+                                <div className="add-button-container">
+                                    <button 
+                                        ref={addButtonRef} 
+                                        className="add-button" 
+                                        onClick={() => handleAddToPlaylist(track)}
+                                    >
+                                        +
+                                    </button>
+                                    {showPlaylistModal && selectedTrackId === track.id && (
+                                        <div className="playlist-modal" style={{ top: modalPosition.top, left: modalPosition.left }}>
+                                            <div className="modal-content">
+                                                <div className="playlist-list">
+                                                    {playlists.length > 0 ? (
+                                                        playlists.map((playlist) => (
+                                                            <button
+                                                                key={playlist.id}
+                                                                className="playlist-option"
+                                                                onClick={() => handlePlaylistSelect(playlist.id)}
+                                                            >
+                                                                {playlist.name}
+                                                            </button>
+                                                        ))
+                                                    ) : (
+                                                        <p>No playlists found. Create a new one!</p>
+                                                    )}
+                                                </div>
+                                                <input
+                                                    type="text"
+                                                    placeholder="New Playlist Name"
+                                                    value={newPlaylistName}
+                                                    onChange={(e) => setNewPlaylistName(e.target.value)}
+                                                />
+                                                <button className="create-playlist-button" onClick={handleCreateNewPlaylist}>Create New Playlist</button>
+                                                <button className= "close-option" onClick={handleCloseModal}>Close</button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         ))
                     ) : (
