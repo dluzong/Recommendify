@@ -111,7 +111,9 @@ function SearchPage() {
                 <button className="logout-button" onClick={handleHome}>Home</button>
                 <button className="logout-button">Logout</button>
                 <div className="profile-picture">
-                    <img src={profileImage} alt="Profile" />
+                    <Link to={"/profile"}>
+                        <img src={profileImage} alt="Profile" />
+                    </Link>
                 </div>
             </header>
 
