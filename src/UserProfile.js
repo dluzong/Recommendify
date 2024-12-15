@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {Link, useNavigate } from 'react-router-dom';
+import {useNavigate } from 'react-router-dom';
 import { useProfile } from './ProfileContext';
 import "./UserProfile.css";
 
@@ -46,10 +46,8 @@ const UserProfile = () => {
     return (
         <div className="user-profile">
             <header className="header">
-                <div className="logo">
-                    <Link to={"/home"}>
-                        Recommendify
-                    </Link>
+                <div>
+                    <button className="logo-nav" onClick={handleHome}>Recommendify</button>
                 </div>
                 <div>
                     <button className="logout-button" onClick={handleHome}>Home</button>

@@ -19,15 +19,15 @@ body {
     margin-top: 5px; /*i think this needs to be added to the other pages too*/
 }
 
-.logo {
+.logo-nav {
     color: #9290C3;
     font-size: 24px;
     font-weight: bold;
-}
-
-.logo a {
-    text-decoration: none; /* Removes underline */
-    color: inherit;
+    background:none;
+    border:none;
+    margin:0;
+    padding:0;
+    cursor: pointer;
 }
 
 .search-bar-container {

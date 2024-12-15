@@ -92,10 +92,8 @@ function SearchPage() {
         <div className="search-page">
             {/* Reusable Header */}
             <header className="header">
-                <div className="logo">
-                    <Link to={"/home"}>
-                        Recommendify
-                    </Link>
+                <div>
+                    <button className="logo-nav" onClick={handleHome}>Recommendify</button>
                 </div>
                 <div className="search-bar-container">
                     <input
