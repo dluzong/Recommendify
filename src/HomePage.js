@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useProfile } from './ProfileContext';
 import './HomePage.css';
 
 function HomePage() {
@@ -10,6 +11,8 @@ function HomePage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [recommendedArtists, setRecommendedArtists] = useState(null);
     const [images, setImages] = useState(null);
+
+    const { displayName, profileImage } = useProfile();
     
     const handleDotClick = (index) => {
         setCurrentIndex(index);
@@ -101,7 +104,7 @@ function HomePage() {
                 <button className="logout-button">Logout</button>
                 <div className="profile-picture">
                     <Link to={"/profile"}>
-                        <img src="/assets/ProfilePic.avif" alt="Profile" />
+                        <img src={profileImage} alt="Profile" />
                     </Link>
                 </div>
             </header>

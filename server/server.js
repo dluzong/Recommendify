@@ -133,6 +133,36 @@ app.get("/api/spotify-profile", async (req, res) => {
     }    
 });
 
+app.get("/api/top-artists", async (req, res) => {
+    const accessToken = req.headers["authorization"];
+    if (!accessToken) {
+        return res.status(401).json({ error: "Access Token Missing" });
+    }
+
+    try {
+        // Fetch user's Spotify profile using fetch
+        const response = await fetch("https://api.spotify.com/v1/me/top/artists?limit=5", {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            },
+        });
+    
+        const data = await response.json(); // Convert response to JSON
+    
+        if (response.ok) {
+            // Return Spotify user data
+            res.json(data);
+        } else {
+            console.error("Error fetching top artists:", data);
+            res.status(response.status).json({ error: "Failed to fetch top artists" });
+        }
+    } catch (error) {
+        console.error("Error fetching top artists:", error.message);
+        res.status(500).json({ error: "Failed to fetch top artists" });
+    }    
+});
+
 app.post("/logout", (req, res) => {
     try {
         res.clearCookie("spotify_session");

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useProfile } from './ProfileContext';
 import './SearchPage.css';
 
 function SearchPage() {
@@ -9,6 +10,8 @@ function SearchPage() {
     const [searchQuery, setSearchQuery] = useState(new URLSearchParams(location.search).get('query') || '');
     const [searchResults, setSearchResults] = useState(null);
 
+    const { displayName, profileImage } = useProfile();
+    
     const handleSearchChange = (event) => {
         setSearchQuery(event.target.value);
     };
@@ -82,7 +85,7 @@ function SearchPage() {
                 <button className="logout-button" onClick={handleHome}>Home</button>
                 <button className="logout-button">Logout</button>
                 <div className="profile-picture">
-                    <img src="/assets/ProfilePic.avif" alt="Profile" />
+                    <img src={profileImage} alt="Profile" />
                 </div>
             </header>
 

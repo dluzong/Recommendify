@@ -1,14 +1,47 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {Link, useNavigate } from 'react-router-dom';
+import { useProfile } from './ProfileContext';
 import "./UserProfile.css";
 
 const UserProfile = () => {
     const navigate = useNavigate();
-    
+    const { displayName, profileImage } = useProfile();
+    const [topArtists, setTopArtists] = useState([]);
+
     const handleHome = () => {
         const storedToken = localStorage.getItem("spotify_token");
         navigate(`/home?access_token=${storedToken}`);
     }
+
+    const fetchTopArtists = async () => {
+        const token = localStorage.getItem("spotify_token");
+        if (!token) {
+            console.error("Spotify token is missing.");
+            return;
+        }
+
+        try {
+            const response = await fetch("http://localhost:5001/api/top-artists", {
+                headers: {
+                    Authorization: token,
+                },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                const topArtists = data.items.map((artist) => artist.name);
+                setTopArtists(topArtists);
+            } else {
+                console.error("Failed to fetch top artists", await response.json());
+            }
+        } catch (error) {
+            console.error("Error fetching top artists:", error.message);
+        }
+    };
+
+    useEffect(() => {
+        fetchTopArtists();
+    }, []);
 
     return (
         <div className="user-profile">
@@ -26,9 +59,9 @@ const UserProfile = () => {
 
             <div className="profile-info">
                 <div className="profile-picture">
-                    <img src="/assets/ProfilePic.avif" alt="Profile" />
+                    <img src={profileImage} alt="Profile" />
                 </div>
-                <h2>User Name</h2> 
+                <h2>{displayName}</h2> 
                 <div className="line"></div>
             </div>
 
@@ -40,13 +73,12 @@ const UserProfile = () => {
                     </div>
                 </div>
                 <div className="right-column">
-                    <h3>Top Genres</h3>
+                    <h3>Top Artists</h3>
                     <ul className="genres">
-                        <li>Pop</li>
-                        <li>Rock</li>
-                        <li>Jazz</li>
-                        <li>Classical</li>
-                        <li>Hip-Hop</li>
+                        {topArtists.length > 0 ? 
+                            topArtists.map((artist,index) => <li key={index}>{artist}</li>)
+                            : (<p>Top artists could not be loaded.</p>)
+                        }
                     </ul>
                 </div>
             </div>
