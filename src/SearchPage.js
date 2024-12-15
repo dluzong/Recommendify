@@ -8,17 +8,20 @@ function SearchPage() {
     const navigate = useNavigate();
 
     const [searchQuery, setSearchQuery] = useState(new URLSearchParams(location.search).get('query') || '');
+    const [submittedQuery, setSubmittedQuery] = useState(searchQuery);
     const [searchResults, setSearchResults] = useState(null);
 
     const { displayName, profileImage } = useProfile();
     
     const handleSearchChange = (event) => {
-        setSearchQuery(event.target.value);
+        setSearchQuery(event.target.value); 
     };
 
     const handleSearchSubmit = () => {
         if (searchQuery.trim() !== '') {
-            // window.location.href = `/search?query=${searchQuery}`;
+            setSubmittedQuery(searchQuery); 
+            navigate(`/search?query=${encodeURIComponent(searchQuery)}`);
+
             const storedToken = localStorage.getItem("spotify_token");
 
             fetch(`http://localhost:5001/api/search?query=${searchQuery}`, {
@@ -37,30 +40,53 @@ function SearchPage() {
     const handleHome = () => {
         const storedToken = localStorage.getItem("spotify_token");
         navigate(`/home?access_token=${storedToken}`);
-    }
+    };
 
     useEffect(() => {
         const queryParams = new URLSearchParams(location.search);
         const query = queryParams.get('query');
-        if (query) {
-            setSearchQuery(query); // Update state when URL query changes
-        }
-        const accessToken = queryParams.get("access_token");
+        const accessToken = queryParams.get('access_token');
+    
         if (accessToken) {
             localStorage.setItem("spotify_token", accessToken);
             window.history.replaceState({}, document.title, window.location.pathname);
         }
-
-        fetch(`http://localhost:5001/api/search?query=${searchQuery}`, {
-            headers: {
-                Authorization: accessToken,
-            },
-        })
-            .then((res) => res.json())
-            .then((data) => setSearchResults(data))
-            .catch((err) => console.error("Error searching:", err));
-
+    
+        if (query) {
+            setSearchQuery(query); 
+            setSubmittedQuery(query); 
+        }
     }, [location.search]);
+    
+    useEffect(() => {
+        if (submittedQuery.trim() !== '') {
+            const storedToken = localStorage.getItem("spotify_token");
+    
+            fetch(`http://localhost:5001/api/search?query=${submittedQuery}`, {
+                headers: {
+                    Authorization: storedToken,
+                },
+            })
+                .then((res) => {
+                    if (!res.ok) {
+                        throw new Error('Failed to fetch results');
+                    }
+                    return res.json();
+                })
+                .then((data) => {
+                    if (data && data.length > 0) {
+                        setSearchResults(data); 
+                    } else {
+                        setSearchResults([]); 
+                    }
+                })
+                .catch((err) => {
+                    console.error("Error searching:", err);
+                    setSearchResults([]); 
+                });
+        }
+    }, [submittedQuery]); 
+    
 
     return (
         <div className="search-page">
@@ -78,7 +104,7 @@ function SearchPage() {
                         placeholder="Search..."
                         value={searchQuery}
                         onChange={handleSearchChange}
-                        onKeyDown={(e) => e.key === 'Enter' && handleSearchSubmit()}  // Submit search on Enter
+                        onKeyDown={(e) => e.key === 'Enter' && handleSearchSubmit()} // Submit search on Enter
                     />
                     <span className="magnifying-glass" onClick={handleSearchSubmit}>🔍</span>
                 </div>
@@ -92,7 +118,7 @@ function SearchPage() {
             {/* Search Results */}
             <main>
                 <div className="search-results-header">
-                    <h2>Search Results for: {searchQuery}</h2>
+                    <h2>Search Results for: {submittedQuery}</h2> {/* Show submitted query */}
                     <button className="create-playlist-button">Create Playlist</button>
                 </div>
                 <div className="divider"></div>
@@ -117,7 +143,6 @@ function SearchPage() {
                     )}
                 </div>
             </main>
-
         </div>
     );
 }
