@@ -16,6 +16,7 @@ body {
     justify-content: space-between;
     padding: 0 20px;
     height: 60px;
+    margin-top: 5px; /*i think this needs to be added to the other pages too*/
 }
 
 .logo {
@@ -53,6 +54,7 @@ body {
 .magnifying-glass {
     position: absolute;
     right: calc(25% - 20px);
+    margin-right: 10px;
     font-size: 18px;
     color: #808080;
     pointer-events: none;
@@ -85,7 +87,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-top: 20px;
+    margin-top: 30px; /* previous value was 20px */
 }
 
 main {
@@ -100,19 +102,21 @@ main {
     font-size: 24px;
 }
 
+/*background-color: #727DBE;*/
 .create-playlist-button {
-    background-color: #727DBE;
+    background-color: #1db954;
     color: white;
     border: none;
     border-radius: 4px;
-    padding: 8px 16px;
+    padding: 10px 20px;
     font-size: 16px;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
 .create-playlist-button:hover {
-    opacity: 0.9;
+    opacity: 0.9; /* take out? */
+    background-color: #1ed760;
 }
 
 .divider {
@@ -122,14 +126,12 @@ main {
     border: none;
 }
 
-
 .search-results {
     display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
+    flex-direction: column; 
+    align-items: flex-start;
     gap: 20px;
-    justify-content: center;
-    padding: 20px;
+    padding: 20px; 
 }
 
 .track-card {
@@ -137,8 +139,11 @@ main {
     display: flex;
     flex-direction: row;
     align-items: center;
-    padding: 10px;
-    width: 400px;
+    justify-content: space-between;
+    padding: 10px 0px;
+    width: 107%;
+    /* max-width: 800px; /* Align cards within a max width */
+    border-radius: 8px;
     transition: transform 0.2s;
 }
 
@@ -147,16 +152,18 @@ main {
 }
 
 .track-image {
-    width: 50%;
+    width: 200px;
     height: 200px;
     object-fit: cover;
     border-radius: 8px;
 }
 
 .track-details {
-    text-align: center;
-    margin: 10px 25px 0;
+    text-align: left;
+    margin-left: 50px; /* adjusts the spacing btwn card & text */
+    flex: 1;
 }
+
 
 .track-name {
     font-size: 16px;
@@ -175,6 +182,7 @@ main {
     /* position: absolute; */
     /* bottom: 10px;  */
     /* right: 10px;  */
+    top: 50%;
     width: 40px;
     height: 40px;
     border-radius: 50%; 
@@ -185,12 +193,13 @@ main {
     border: none;
     cursor: pointer;
     /* z-index: 3; */
-    /* display: flex;
+    /*display: flex;
     justify-content: center;
     align-items: center; */
     box-shadow: 0 4px 6px rgb(24, 24, 24);
     transition: transform 0.2s ease, opacity 0.2s ease;
 }
+
 
 .add-button:hover {
     transform: scale(1.1);
