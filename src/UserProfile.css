@@ -107,11 +107,36 @@ body {
     margin-bottom: 10px;
 }
 
-/* .playlists {
+.playlists-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 10px;
-} */
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    overflow-y: auto;
+    max-height: 400px;
+    padding: 10px;
+}
+
+.playlist-item {
+    cursor: pointer;
+    text-align: center;
+}
+
+.playlist-image {
+    width: 100%;
+    aspect-ratio: 1 / 1; /* makes image a perfect sqaure */
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.playlist-name {
+    margin-top: 5px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #9290C3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 
 p {
     color: #9290C3;

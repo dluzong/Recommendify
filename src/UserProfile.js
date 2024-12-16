@@ -7,6 +7,7 @@ const UserProfile = () => {
     const navigate = useNavigate();
     const { displayName, profileImage } = useProfile();
     const [topArtists, setTopArtists] = useState([]);
+    const [playlists, setPlaylists] = useState([]);
 
     const handleHome = () => {
         const storedToken = localStorage.getItem("spotify_token");
@@ -39,6 +40,31 @@ const UserProfile = () => {
         }
     };
 
+    const fetchPlaylists = async () => {
+        const storedToken = localStorage.getItem("spotify_token");
+        if (!storedToken) {
+            console.error("Spotify token is missing.");
+            return;
+        }
+
+        try {
+            const response = await fetch("https://api.spotify.com/v1/me/playlists", {
+                headers: {
+                    Authorization: `Bearer ${storedToken}`,
+                },
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setPlaylists(data.items);
+            } else {
+                console.error("Failed to fetch playlists", await response.json());
+            }
+        } catch (error) {
+            console.error("Error fetching playlists:", error.message);
+        }
+    };
+
     const handleLogout = () => {
         localStorage.removeItem("spotify_token"); // clearing the stored token
         navigate("/"); // redirect user to the login page
@@ -46,6 +72,7 @@ const UserProfile = () => {
 
     useEffect(() => {
         fetchTopArtists();
+        fetchPlaylists();
     }, []);
 
     return (
@@ -71,8 +98,27 @@ const UserProfile = () => {
             <div className="profile-data">
                 <div className="left-column">
                     <h3>Playlists</h3>
-                    <div className="playlists">
-                        <p>No playlists made.</p>
+                    <div>
+                        {playlists.length > 0 ? (
+                            <div className="playlists-grid">
+                                {playlists.map((playlist) => (
+                                    <div 
+                                        key={playlist.id}
+                                        className="playlist-item"
+                                        onClick={() => navigate(`/playlist/${playlist.id}`)}
+                                    >
+                                        <img 
+                                            src={playlist.images[0]?.url || "default-playlist-image.jpg"} 
+                                            alt={playlist.name} 
+                                            className="playlist-image"
+                                        />
+                                        <p className="playlist-name">{playlist.name}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <p>No playlists made.</p>
+                        )}
                     </div>
                 </div>
                 <div className="right-column">
