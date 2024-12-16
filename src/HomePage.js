@@ -12,7 +12,7 @@ function HomePage() {
     const [recommendedArtists, setRecommendedArtists] = useState(null);
     const [images, setImages] = useState(null);
 
-    const { displayName, profileImage } = useProfile();
+    const { profileImage } = useProfile();
     
     const handleDotClick = (index) => {
         setCurrentIndex(index);
@@ -136,9 +136,10 @@ function HomePage() {
 
                                 return (
                                     <div className={`carousel-item ${position}`} key={index}>
-                                        <img src={image.src} alt={image.title} />
-                                        <p className="song-title">{image.title}</p>
-                                        {/* <button className="add-button">+</button> */}
+                                        <a href={image.spotify} target="_blank" rel="noopener noreferrer">
+                                            <img src={image.src} alt={image.title} />
+                                            <p className="song-title">{image.title}</p>
+                                        </a>
                                     </div>
                                 );
                             })
@@ -170,11 +171,13 @@ function HomePage() {
                 {recommendedArtists ? (
                     recommendedArtists.map((artist, index) => (
                         <div key={index} className="artist-card">
-                            <div className="artist-image-container">
-                                <img src={artist.image} alt={artist.name} className="artist-image" />
-                            </div>
-                            <h3 className="artist-name">{artist.name}</h3>
-                            <p className="artist-genre">{artist.genre}</p>
+                            <a href={artist.spotify} target="_blank" rel="noopener noreferrer">
+                                <div className="artist-image-container">
+                                    <img src={artist.image} alt={artist.name} className="artist-image" />
+                                </div>
+                                <h3 className="artist-name">{artist.name}</h3>
+                                <p className="artist-genre">{artist.genre}</p>
+                            </a>
                         </div>
                     ))
                 ) : (

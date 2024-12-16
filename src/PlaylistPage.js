@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useProfile } from './ProfileContext';
 import './PlaylistPage.css';
 
@@ -120,7 +120,9 @@ function PlaylistPage() {
                         Logout
                     </button>
                     <div className="profile-picture">
-                        <img src={profileImage} alt="Profile" />
+                        <Link to={"/profile"}>
+                            <img src={profileImage} alt="Profile" />
+                        </Link>
                     </div>
                 </div>
             </header>
