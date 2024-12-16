@@ -212,7 +212,7 @@ main {
     border-radius: 8px;
     display: flex;
     flex-direction: column;
-    gap: 10px;  /* Ensures space between elements */
+    gap: 10px; 
     top: -10px; 
     left: calc(100% - 330px); 
     margin-left: 10px; 
@@ -227,9 +227,9 @@ main {
 .playlist-list {
     max-height: 200px;
     overflow-y: auto;
-    display: flex; /* Makes sure the children are aligned in a column */
-    flex-direction: column; /* Aligns items vertically */
-    gap: 10px; /* Adds space between each playlist item */
+    display: flex; 
+    flex-direction: column; 
+    gap: 10px; 
 }
 
 .playlist-option {
@@ -241,11 +241,11 @@ main {
     cursor: pointer;
     border-radius: 5px;
     transition: background-color 0.3s ease;
-    width: 100%; /* Ensures each button takes up full width, stacking them below */
+    width: 100%; 
 }
 
 .playlist-option:hover {
-    background-color: #2c2a8a; /* Slight hover color change for better UX */
+    background-color: #2c2a8a; 
 }
 
 .playlist-modal input[type="text"] {
