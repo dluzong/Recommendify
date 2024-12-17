@@ -1,11 +1,11 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom'; // importing the router components
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom'; 
 import { ProfileProvider } from './ProfileContext';
 import LoginPage from './LoginPage';
 import HomePage from './HomePage';
 import SearchPage from './SearchPage';
 import UserProfile from './UserProfile';
-import PlaylistPage from './PlaylistPage'; // Import the PlaylistPage component
+import PlaylistPage from './PlaylistPage'; 
 
 function App() {
 
