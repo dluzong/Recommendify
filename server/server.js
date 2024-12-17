@@ -42,7 +42,9 @@ app.get("/callback", async (req, res) => {
     console.log("callback route...")
     const code = req.query.code || null; // The code returned by Spotify after user logs in
     if (!code) {
-        return res.status(400).send("No code received from Spotify");
+        console.error("No code received from Spotify");
+        return res.redirect("http://localhost:3000");
+        // return res.status(400).send("No code received from Spotify");
     }
 
     try {
