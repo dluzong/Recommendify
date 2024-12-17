@@ -5,6 +5,7 @@ var querystring = require('querystring');
 require("dotenv").config();
 
 const app = express();
+app.use(express.json()); //to parse json
 app.use(express.static(__dirname + '/public')).use(cors());
 
 const PORT = 5001;
@@ -370,6 +371,73 @@ app.post("/api/add-to-playlist", async (req, res) => {
     } catch (error) {
         console.error("Error adding track to playlist:", error.message);
         res.status(500).json({ error: "Failed to add track to playlist" });
+    }
+});
+
+app.post("/api/create-playlist", async (req, res) => {
+    const { playlistName, trackUris } = req.body; 
+    const accessToken = req.headers["authorization"]; 
+    
+    if (!accessToken) {
+        return res.status(401).json({ error: "Access Token Missing" });
+    }
+    
+    if (!playlistName || !trackUris || !Array.isArray(trackUris) || trackUris.length === 0) {
+        return res.status(400).json({ error: "Playlist name and at least one track URI are required" });
+    }
+
+    try {
+        //create new playlist
+        const createPlaylistResponse = await fetch("https://api.spotify.com/v1/me/playlists", {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                name: playlistName,
+                description: "Created with Recommendify",
+                public: false, // Private playlist
+            }),
+        });
+        const createPlaylistData = await createPlaylistResponse.json();
+        if (!createPlaylistResponse.ok) {
+            console.error("Error creating playlist:", createPlaylistData);
+            return res.status(createPlaylistResponse.status).json({ 
+                error: createPlaylistData.error || "Failed to create playlist" 
+            });
+        }
+        const playlistId = createPlaylistData.id; 
+
+        // add tracks to new playlist
+        const addTracksResponse = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                uris: trackUris,
+            }),
+        });
+        const addTracksData = await addTracksResponse.json();
+        if (!addTracksResponse.ok) {
+            console.error("Error adding tracks to playlist:", addTracksData);
+            return res.status(addTracksResponse.status).json({ 
+                error: addTracksData.error || "Failed to add tracks to playlist" 
+            });
+        }
+
+        
+        res.json({ 
+            success: true, 
+            message: "Playlist created and tracks added successfully!",
+            playlistId,
+            playlistName
+        });
+    } catch (error) {
+        console.error("Error in /api/create-playlist:", error.message);
+        res.status(500).json({ error: "Internal server error" });
     }
 });
 
