@@ -92,7 +92,7 @@ const UserProfile = () => {
                                         onClick={() => navigate(`/playlist/${playlist.id}`)}
                                     >
                                         <img 
-                                            src={(playlist.images && playlist.images.length > 0) ? playlist.images[0]?.url : "default-playlist-image.jpg"} 
+                                            src={(playlist.images && playlist.images.length > 0) ? playlist.images[0]?.url : '/assets/default-image.jpg'} 
                                             alt={playlist.name} 
                                             className="playlist-image"
                                         />
