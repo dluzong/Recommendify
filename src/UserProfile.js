@@ -14,55 +14,39 @@ const UserProfile = () => {
         navigate(`/home?access_token=${storedToken}`);
     }
 
-    const fetchTopArtists = async () => {
-        const token = localStorage.getItem("spotify_token");
-        if (!token) {
-            console.error("Spotify token is missing.");
-            return;
-        }
+    const fetchTopArtists = () => {
+        const storedToken = localStorage.getItem("spotify_token");
 
-        try {
-            const response = await fetch("http://localhost:5001/api/top-artists", {
-                headers: {
-                    Authorization: token,
-                },
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                const topArtists = data.items.map((artist) => artist.name);
-                setTopArtists(topArtists);
-            } else {
-                console.error("Failed to fetch top artists", await response.json());
-            }
-        } catch (error) {
+        fetch("http://localhost:5001/api/top-artists", {
+            headers: {
+                Authorization: storedToken,
+            },
+        })
+        .then((res) => res.json())
+        .then((data) => {
+            const topArtists = data.items.map((artist) => artist.name);
+            setTopArtists(topArtists);
+        })
+        .catch((error) => {
             console.error("Error fetching top artists:", error.message);
-        }
+        }); 
     };
 
-    const fetchPlaylists = async () => {
+    const fetchPlaylists = () => {
         const storedToken = localStorage.getItem("spotify_token");
-        if (!storedToken) {
-            console.error("Spotify token is missing.");
-            return;
-        }
 
-        try {
-            const response = await fetch("https://api.spotify.com/v1/me/playlists", {
-                headers: {
-                    Authorization: `Bearer ${storedToken}`,
-                },
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                setPlaylists(data.items);
-            } else {
-                console.error("Failed to fetch playlists", await response.json());
-            }
-        } catch (error) {
+        fetch("https://api.spotify.com/v1/me/playlists", {
+            headers: {
+                Authorization: `Bearer ${storedToken}`,
+            },
+        })
+        .then((res) => res.json())
+        .then((data) => {
+            setPlaylists(data.items);
+        })
+        .catch((error) => {
             console.error("Error fetching playlists:", error.message);
-        }
+        });
     };
 
     const handleLogout = () => {
@@ -131,7 +115,6 @@ const UserProfile = () => {
                     </ul>
                 </div>
             </div>
-
         </div>
     )
 }
