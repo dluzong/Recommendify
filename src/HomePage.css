@@ -133,6 +133,18 @@ body {
     image-rendering: auto;
 }
 
+/* Hide song titles by default */
+.carousel-item .song-title {
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+/* Show song title only for active carousel item */
+.carousel-item.active .song-title {
+    visibility: visible;
+    opacity: 1;
+}
+
 .carousel-item.active {
     opacity: 1;
     transform: scale(1);
