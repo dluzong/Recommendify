@@ -205,7 +205,6 @@ function SearchPage() {
         const queryParams = new URLSearchParams(location.search);
         const query = queryParams.get('query');
         const accessToken = queryParams.get('access_token');
-    
         if (accessToken) {
             localStorage.setItem("spotify_token", accessToken);
             window.history.replaceState({}, document.title, window.location.pathname);
@@ -215,9 +214,7 @@ function SearchPage() {
             setSearchQuery(query); 
             setSubmittedQuery(query); 
         }
-    }, [location.search]);
-
-    useEffect(() => {
+    
         if (submittedQuery.trim() !== '') {
             const storedToken = localStorage.getItem("spotify_token");
     
@@ -226,25 +223,26 @@ function SearchPage() {
                     Authorization: storedToken,
                 },
             })
-                .then((res) => {
-                    if (!res.ok) {
-                        throw new Error('Failed to fetch results');
-                    }
-                    return res.json();
-                })
-                .then((data) => {
-                    if (data && data.length > 0) {
-                        setSearchResults(data); 
-                    } else {
-                        setSearchResults([]); 
-                    }
-                })
-                .catch((err) => {
-                    console.error("Error searching:", err);
+            .then((res) => {
+                if (!res.ok) {
+                    throw new Error('Failed to fetch results');
+                }
+                return res.json();
+            })
+            .then((data) => {
+                if (data && data.length > 0) {
+                    setSearchResults(data); 
+                } else {
                     setSearchResults([]); 
-                });
+                }
+            })
+            .catch((err) => {
+                console.error("Error searching:", err);
+                setSearchResults([]); 
+            });
         }
-    }, [submittedQuery]);
+    }, [location.search, submittedQuery]);
+    
 
     return (
         <div className="search-page">
